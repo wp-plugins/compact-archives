@@ -3,7 +3,7 @@
 Plugin Name: Compact Archives
 Plugin URI: http://rmarsh.com/plugins/compact-archives/
 Description: Displays a compact monthly archive instead of the default long list. Either display it as a block suitable for the body of a page or in a form compact enough for a sidebar. 
-Version: 2.0.0
+Version: 2.1.0
 Author: Rob Marsh, SJ
 Author URI: http://rmarsh.com/
 */
@@ -65,10 +65,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	The year link at the start of each line is wrapped in <strong></strong> and months with no posts 
 	are wrapped in <span class="emptymonth"></span> so you can differentiate them visually
 	
-	If my Post Output Plugin is installed the Compact Archive output will be cached for efficiency.
+	If my Plugin Output Cache Plugin is installed the Compact Archive output will be cached for efficiency.
 	
 */
-function compact_archive( $style='initial', $before='<li>', $after='</li>' ) {
+function compact_archive( $style='initial', $before='<li>', $after='</li>', $in_cats='' ) {
  	$result = false;
 	// if the Plugin Output Cache is installed we can cheat...
 	if (defined('POC_CACHE_4')) {
@@ -79,7 +79,7 @@ function compact_archive( $style='initial', $before='<li>', $after='</li>' ) {
 	}
 	// ... otherwise we do it the hard way
 	if (false === $result) {
-		$result = utf8_encode(get_compact_archive($style, $before, $after));
+		$result = utf8_encode(get_compact_archive($style, $before, $after, $in_cats));
 		if (defined('POC_CACHE_4')) {
 			poc_cache_store($key, $result);
 			$cache_time = sprintf('<!-- Compact Archive took %.3f milliseconds -->', 1000 * poc_cache_timer_start());			
@@ -93,7 +93,7 @@ function compact_archive( $style='initial', $before='<li>', $after='</li>' ) {
 	Stuff below this point is not meant to be used directly
 *********************************************************************************************************/
 
-function get_compact_archive( $style='initial', $before='<li>', $after='</li>' ) {
+function get_compact_archive( $style='initial', $before='<li>', $after='</li>', $in_cats='' ) {
 	global $wpdb, $wp_version;
 	setlocale(LC_ALL,WPLANG); // set localization language
 	$below21 = version_compare($wp_version, '2.1','<');
@@ -102,7 +102,11 @@ function get_compact_archive( $style='initial', $before='<li>', $after='</li>' )
 		$now = current_time('mysql');
 		$results = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS year, MONTH(post_date) AS month FROM " . $wpdb->posts . " WHERE post_date <'" . $now . "' AND post_status='publish' AND post_password='' ORDER BY year DESC, month DESC");
 	} else {
-		$results = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS year, MONTH(post_date) AS month FROM " . $wpdb->posts . " WHERE post_type='post' AND post_status='publish' AND post_password='' ORDER BY year DESC, month DESC");
+		if (!$in_cats) {
+			$results = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS year, MONTH(post_date) AS month FROM $wpdb->posts WHERE post_type='post' AND post_status='publish' AND post_password='' ORDER BY year DESC, month DESC");
+	    } else {
+			$results = $wpdb->get_results("SELECT DISTINCT YEAR(post_date) AS year, MONTH(post_date) AS month FROM $wpdb->posts  INNER JOIN $wpdb->term_relationships ON ($wpdb->posts.ID = $wpdb->term_relationships.object_id) INNER JOIN $wpdb->term_taxonomy ON ($wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id) WHERE post_type='post' AND post_status='publish' AND post_password='' AND $wpdb->term_taxonomy.taxonomy = 'category' AND $wpdb->term_taxonomy.term_id IN ($in_cats) GROUP BY $wpdb->posts.ID ORDER BY year DESC, month DESC");			
+		}
 	}
 	if (!$results) {
 		return $before.__('Archive is empty').$after;
