@@ -3,7 +3,7 @@
 Plugin Name: WPBeginner's Compact Archives
 Plugin URI: http://www.wpbeginner.com
 Description: Displays a compact monthly archive instead of the default long list. Either display it as a block suitable for the body of a page or in a form compact enough for a sidebar. 
-Version: 3.0.0
+Version: 3.0.1
 Author: WPBeginner
 Author URI: http://www.wpbeginner.com
 */
@@ -158,22 +158,22 @@ add_shortcode( 'compact_archive', 'compact_archives_shortcode' );
 // Compact Archive Widget
 // Thanks to Aldo Latino http://www.aldolat.it/
 
-function caw_load_widget() {
-	register_widget( 'CAW_Widget' );
+function wpb_caw_load_widget() {
+	register_widget( 'WPBeginner_CAW_Widget' );
 }
-add_action( 'widgets_init', 'caw_load_widget' );
+add_action( 'widgets_init', 'wpb_caw_load_widget' );
 
 /**
  * Create the widget
  *
  */
-class CAW_Widget extends WP_Widget {
-	function CAW_Widget() {
+class WPBeginner_CAW_Widget extends WP_Widget {
+	function WPBeginner_CAW_Widget() {
 		$widget_ops = array(
-			'classname'   => 'caw_widget',
-			'description' => __( 'Create a widget for Compact Archives plugin', 'caw-domain' )
+			'classname'   => 'wpb_caw_widget',
+			'description' => __( 'Create a widget for Compact Archives plugin', 'wpb-caw-domain' )
 		);
-		$this->WP_Widget( 'caw-widget', __( 'Compact Archives Widget', 'caw-domain' ), $widget_ops );
+		$this->WP_Widget( 'wpb-caw-widget', __( 'Compact Archives Widget', 'wpb-caw-domain' ), $widget_ops );
 	}
 
 	function widget( $args, $instance ) {
@@ -196,15 +196,10 @@ class CAW_Widget extends WP_Widget {
 		echo $before_widget;
 		if ( $title ) echo $before_title . $title . $after_title; ?>
 		<ul class="compact-archives"<?php echo $text_style; ?>>
-			<?php if( function_exists( 'compact_archive' ) ) :
-				compact_archive( $style = $widget_style );
-			else : ?>
-				<li>
-					<?php printf( __( 'The %1$sCompact Archives%2$s plugin is not active. Please install it and activate it.', 'caw-domain' ),
-					'<a href="http://wordpress.org/extend/plugins/compact-archives/">',
-					'</a>' ); ?>
-				</li>
-			<?php endif; ?>
+			
+				<?php compact_archive( $style = $widget_style ); ?>
+			
+				
 		</ul>
 		<?php echo $after_widget;
 	}
@@ -226,45 +221,60 @@ class CAW_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, $defaults );
 		$style = $instance['style'];
 		$text_style = $instance['text_style'];
-		?>
-
+		
+/**
+ * Check if Compact Archives Widget plugin is installed. 
+ * Ask user to deactivate it if it is installed. 
+ * 
+ */
+	
+	if ( is_plugin_active( 'compact-archives-widget/compact-archives-widget.php' ) ) { ?>
+			<p style="background-color: #FFD5D5; padding: 10px;">
+				<?php printf( __( '%3$sNotice.%4$s<br />The %3$sCompact Archives Widget%4$s plugin is active on your WordPress and it\'s not needed anymore . Please, %1$sdeactivate it from here%2$s.', 'wpb-caw-domain' ),
+					'<a href="' . admin_url( 'plugins.php' ) . '">',
+					'</a>',
+					'<strong>',
+					'</strong>'
+				); ?>
+			</p>
+		<?php } ?>
 			<p>
 				<label for="<?php echo esc_attr( $this->get_field_id('title') ); ?>">
-					<?php _e( 'Title:', 'caw-domain' ); ?>
+					<?php _e( 'Title:', 'wpb-caw-domain' ); ?>
 				</label>
 				<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 			</p>
 
 			<p>
 				<label for="<?php echo $this->get_field_id( 'style' ); ?>">
-					<?php _e( 'Select the style:', 'caw-domain' ); ?>
+					<?php _e( 'Select the style:', 'wpb-caw-domain' ); ?>
 				</label><br />
 				<select name="<?php echo $this->get_field_name( 'style' ); ?>" >
 					<option <?php selected( 'initial', $style ); ?> value="initial">
-						<?php _e( 'Initials', 'caw-domain' ); ?>
+						<?php _e( 'Initials', 'wpb-caw-domain' ); ?>
 					</option>
 					<option <?php selected( 'block', $style ); ?> value="block">
-						<?php _e( 'Block', 'caw-domain' ); ?>
+						<?php _e( 'Block', 'wpb-caw-domain' ); ?>
 					</option>
 					<option <?php selected( 'numeric', $style ); ?> value="numeric">
-						<?php _e( 'Numeric', 'caw-domain' ); ?>
+						<?php _e( 'Numeric', 'wpb-caw-domain' ); ?>
 					</option>
 				</select>
 			</p>
 
 			<p>
 				<label for="<?php echo $this->get_field_id( 'text_style' ); ?>">
-					<?php _e( 'Transform text:', 'caw-domain' ); ?>
+					<?php _e( 'Transform text:', 'wpb-caw-domain' ); ?>
 				</label>
 				<select name="<?php echo $this->get_field_name( 'text_style' ); ?>" >
 					<option <?php selected( 'None', $text_style ); ?> value="none">
-						<?php _e( 'None transformation', 'caw-domain' ); ?>
+						<?php _e( 'None transformation', 'wpb-caw-domain' ); ?>
 					</option>
 					<option <?php selected( 'uppercase', $text_style ); ?> value="uppercase">
-						<?php _e( 'UPPERCASE', 'caw-domain' ); ?>
+						<?php _e( 'UPPERCASE', 'wpb-caw-domain' ); ?>
 					</option>
 					<option <?php selected( 'capitalize', $text_style ); ?> value="capitalize">
-						<?php _e( 'Capitalize', 'caw-domain' ); ?>
+						<?php _e( 'Capitalize', 'wpb-caw-domain' ); ?>
 					</option>
 				</select>
 			</p>
@@ -279,10 +289,10 @@ class CAW_Widget extends WP_Widget {
  * 
  */
 
-function caw_load_languages() {
-	load_plugin_textdomain( 'caw-domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages');
+function wpb_caw_load_languages() {
+	load_plugin_textdomain( 'wpb-caw-domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages');
 }
 
-add_action( 'plugins_loaded', 'caw_load_languages' );
+add_action( 'plugins_loaded', 'wpb_caw_load_languages' );
 
 ?>
