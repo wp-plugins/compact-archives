@@ -42,7 +42,7 @@ Lastly, if you like this plugin then follow WPBeginner on [Twitter](http://twitt
 
 Plugin Header Photo Credit: [Mr. T in DC](http://www.flickr.com/photos/mr_t_in_dc/4249887012/ "Scroll photo by Mr T in DC's Flickr")
 
-Original Author Credit: This plugin was originally created by [Rob Marsh](http://profiles.wordpress.org/robmarsh/). WPBeginner adapted the plugin and took the responsibility to keep it updated and going.
+Original Author Credit: This plugin was originally created by [Rob Marsh](http://profiles.wordpress.org/robmarsh/) and [Aldolat](http://profiles.wordpress.org/aldolat/) added a widget for it. WPBeginner adopted the plugin and took the responsibility to keep it updated and going.
 
 
 == Installation ==
