@@ -3,7 +3,7 @@ Contributors: smub, noumaan
 Tags: posts, archive, archives
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 3.0.2
+Stable tag: 3.0.3
 
 Displays a monthly archive of posts in a more compact form than the usual long list.
 
@@ -122,6 +122,8 @@ Compact Archives also honours whatever kind of permalink pattern you have set.
 1. Compact archives displayed in block layout
 
 == Changelog ==
+= 3.0.3 =
+* Minor bug fix
 = 3.0.2 =
 * Resolved shortcode output bug.
 = 3.0.1 =

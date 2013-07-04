@@ -3,7 +3,7 @@
 Plugin Name: WPBeginner's Compact Archives
 Plugin URI: http://www.wpbeginner.com
 Description: Displays a compact monthly archive instead of the default long list. Either display it as a block suitable for the body of a page or in a form compact enough for a sidebar. 
-Version: 3.0.2
+Version: 3.0.3
 Author: WPBeginner
 Author URI: http://www.wpbeginner.com
 */
@@ -78,8 +78,11 @@ function compact_archive( $style='initial', $before='<li>', $after='</li>' ) {
 			$cache_time = sprintf('<!-- Compact Archive took %.3f milliseconds -->', 1000 * poc_cache_timer_start());			
 		}
 	} 
-	return $result;
-	if (defined('POC_CACHE_4')) return $cache_time;
+
+	echo $result;
+
+if (defined('POC_CACHE_4')) echo  $cache_time;
+
 }
 
 /********************************************************************************************************
@@ -153,7 +156,7 @@ extract( shortcode_atts( array(
 $wrap_end = "</ul>";
 endif;
 
-$string = $wrap . compact_archive($style, $before, $after) . $wrap_end;  
+$string = $wrap . get_compact_archive($style, $before, $after) . $wrap_end;  
 
 return $string;
 
